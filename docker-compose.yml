@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+  frontend:
+    image: ${DOCKER_HUB_CREDS_USR}/recipe-frontend:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - recipe-network
+  backend:
+    image: ${DOCKER_HUB_CREDS_USR}/recipe-backend:latest
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    networks:
+      - recipe-network
+networks:
+  recipe-network:
+    driver: bridge"""

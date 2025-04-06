@@ -5,7 +5,21 @@ function Hero() {
   // Food-related words for animated text
   const foodWords = ["Delicious", "Tasty", "Homemade", "Fresh", "Gourmet"];
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [imageLoaded, setImageLoaded] = useState(false);
+
+  // Array of hero images
+  const heroImages = [
+    
+    "/images/hero-food2.jpg",
+    "/images/hero-food4.jpg",
+    "/images/hero-food5.jpg",
+    "/images/hero-food6.jpg",
+    "/images/hero-food7.jpg",
+    "/images/hero-food8.jpg",
+    "/images/hero-food10.jpg",
+    "/images/hero-food12.jpg",
+  ];
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [fade, setFade] = useState(true);
 
   // Animate food words
   useEffect(() => {
@@ -14,6 +28,19 @@ function Hero() {
     }, 2000);
 
     return () => clearInterval(wordInterval);
+  }, []);
+
+  // Animate hero images with fade effect
+  useEffect(() => {
+    const imageInterval = setInterval(() => {
+      setFade(false); // Start fade-out
+      setTimeout(() => {
+        setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
+        setFade(true); // Start fade-in
+      }, 500); // Duration of fade-out
+    }, 5000); // Change image every 5 seconds
+
+    return () => clearInterval(imageInterval);
   }, []);
 
   return (
@@ -58,32 +85,23 @@ function Hero() {
             </div>
           </div>
 
-          {/* Your Image */}
+          {/* Hero Image with animation */}
           <div className="md:w-1/2 perspective-1000">
             <div
               className={`rounded-lg overflow-hidden shadow-xl transform transition-all duration-1000 ${
-                imageLoaded ? "opacity-100 scale-100" : "opacity-0 scale-95"
-              } hover:rotate-2`}
+                fade ? "opacity-100" : "opacity-0"
+              }`}
               style={{
                 animation: "float 6s ease-in-out infinite",
               }}
             >
-              {/* Replace '/your-image.jpg' with the path to your image */}
               <img
-                src="/images/hero-food.jpg"
+                src={heroImages[currentImageIndex]} // Dynamic image source
                 alt="Delicious food"
                 className="w-full h-auto object-cover transform transition-transform duration-700 hover:scale-105"
                 style={{
                   minHeight: "300px",
                   maxHeight: "400px",
-                }}
-                onLoad={() => setImageLoaded(true)}
-                onError={(e) => {
-                  // Fallback in case the image doesn't load
-                  e.target.onerror = null;
-                  e.target.src =
-                    "https://images.unsplash.com/photo-1606787366850-de6330128bfc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80";
-                  setImageLoaded(true);
                 }}
               />
             </div>

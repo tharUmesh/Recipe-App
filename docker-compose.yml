@@ -1,7 +1,7 @@
-version: "3"
-
 services:
   frontend:
+    build:
+      context: ./frontend
     image: ${DOCKER_HUB_CREDS_USR}/recipe-frontend:latest
     ports:
       - "80:80"
@@ -10,13 +10,17 @@ services:
     restart: unless-stopped
     networks:
       - recipe-network
+
   backend:
+    build:
+      context: ./backend
     image: ${DOCKER_HUB_CREDS_USR}/recipe-backend:latest
     ports:
       - "5000:5000"
     restart: unless-stopped
     networks:
       - recipe-network
+
 networks:
   recipe-network:
-    driver: bridge"""
+    driver: bridge

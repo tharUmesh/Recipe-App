@@ -2,41 +2,42 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_USER = credentials('docker-hub-username')     // Jenkins credential ID
-        DOCKER_HUB_PASS = credentials('docker-hub-password')     // Jenkins credential ID
+        DOCKER_IMAGE_BACKEND = 'recipe-backend'
+        DOCKER_IMAGE_FRONTEND = 'recipe-frontend'
     }
 
     stages {
-        stage('Clone Repository') {
+        stage('Clone Repo') {
             steps {
-                git 'https://github.com/kasun020/recipe-app-0.git'
+                git 'https://github.com/tharUmesh/Recipe-App.git'
             }
         }
 
-        stage('Build Docker Images') {
+        stage('Build Backend Docker Image') {
             steps {
-                sh '''
-                docker build -t $DOCKER_HUB_USER/recipe-frontend:latest ./frontend
-                docker build -t $DOCKER_HUB_USER/recipe-backend:latest ./backend
-                '''
+                dir('backend') {
+                    script {
+                        sh 'docker build -t $DOCKER_IMAGE_BACKEND .'
+                    }
+                }
             }
         }
 
-        stage('Push Docker Images') {
+        stage('Build Frontend Docker Image') {
             steps {
-                sh '''
-                echo "$DOCKER_HUB_PASS" | docker login -u "$DOCKER_HUB_USER" --password-stdin
-                docker push $DOCKER_HUB_USER/recipe-frontend:latest
-                docker push $DOCKER_HUB_USER/recipe-backend:latest
-                '''
+                dir('frontend') {
+                    script {
+                        sh 'docker build -t $DOCKER_IMAGE_FRONTEND .'
+                    }
+                }
             }
         }
 
-        stage('Deploy Using Ansible') {
+        stage('Cleanup') {
             steps {
-                sh '''
-                ansible-playbook -i ec2-inventory.ini deploy.yml
-                '''
+                script {
+                    sh 'docker image prune -f'
+                }
             }
         }
     }

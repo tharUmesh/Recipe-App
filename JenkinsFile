@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git credentialsId: 'github-creds', url: 'https://github.com/tharUmesh/Recipe-App.git'
+                git credentialsId: 'github-creds', url: 'https://github.com/tharUmesh/Recipe-App.git', branch: 'main'
             }
         }
 

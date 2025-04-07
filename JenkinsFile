@@ -2,43 +2,39 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE_BACKEND = 'recipe-backend'
-        DOCKER_IMAGE_FRONTEND = 'recipe-frontend'
+        DOCKERHUB_USERNAME = 'tharunumesh' 
     }
 
     stages {
-        stage('Clone Repo') {
+        stage('Clone Repository') {
             steps {
                 git 'https://github.com/tharUmesh/Recipe-App.git'
             }
         }
 
-        stage('Build Backend Docker Image') {
-            steps {
-                dir('backend') {
-                    script {
-                        sh 'docker build -t $DOCKER_IMAGE_BACKEND .'
-                    }
-                }
-            }
-        }
-
-        stage('Build Frontend Docker Image') {
-            steps {
-                dir('frontend') {
-                    script {
-                        sh 'docker build -t $DOCKER_IMAGE_FRONTEND .'
-                    }
-                }
-            }
-        }
-
-        stage('Cleanup') {
+        stage('Build Docker Images') {
             steps {
                 script {
-                    sh 'docker image prune -f'
+                    sh 'docker-compose build'
                 }
             }
+        }
+
+        stage('Run Containers') {
+            steps {
+                script {
+                    sh 'docker-compose up -d'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '🚀 Deployment successful!'
+        }
+        failure {
+            echo '❌ Something went wrong.'
         }
     }
 }
